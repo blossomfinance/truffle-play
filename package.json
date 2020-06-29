@@ -75,7 +75,8 @@
       "commit": true,
       "push": true,
       "requireCleanWorkingDir": false,
-      "tag": true
+      "tag": true,
+      "requireUpstream": false
     },
     "github": {
       "release": true
