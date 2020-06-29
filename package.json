@@ -1,7 +1,7 @@
 {
-  "name": "truffle-declarative",
+  "name": "truffle-play",
   "version": "2.2.0",
-  "description": "Run complex playbooks of blockchain scripts using simple declarative syntax. Records entire result including failed tests for easy retry of only failed methods.",
+  "description": "Dev-ops for the Ethereum blockchain: a declarative, domain-specific language & supporting framework for managing mission-critical Ethereum smart contracts.",
   "main": "index.js",
   "bin": {
     "truffle-play": "./cli.js"
@@ -48,26 +48,27 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/matmar10/truffle-declarative.git"
+    "url": "git+https://github.com/blossomfinance/truffle-play.git"
   },
   "keywords": [
     "Truffle",
+    "ethereum", 
+    "devops",
+    "smart contracts",
+    "production",
     "exec",
     "script",
-    "fault",
-    "tolerant",
-    "playback",
-    "network",
-    "errors",
+    "faul tolerant",
     "yaml",
-    "declarative"
+    "declarative",
+    "domain specific language"
   ],
   "author": "Matthew J. Martin <matthew.mar10@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/matmar10/truffle-declarative/issues"
+    "url": "https://github.com/blossomfinance/truffle-play/issues"
   },
-  "homepage": "https://github.com/matmar10/truffle-declarative#readme",
+  "homepage": "https://github.com/blossomfinance/truffle-play#readme",
   "release-it": {
     "non-interactive": true,
     "git": {
