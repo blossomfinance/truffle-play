@@ -41,7 +41,7 @@
   },
   "scripts": {
     "release": "./node_modules/.bin/release-it",
-    "test": "npm run test:lib && npm run test:cli && test:codequality",
+    "test": "npm run test:lib && npm run test:cli && npm run test:codequality",
     "test:lib": "run-with-testrpc -d -m \"myth like bonus scare over problem client lizard pioneer submit female collect\" 'npm run test:build && mocha test/lib.spec.js'",
     "test:cli": "run-with-testrpc -d -m \"myth like bonus scare over problem client lizard pioneer submit female collect\" 'npm run test:build && npm run test:cli:fixtures && mocha test/cli.spec.js'",
     "test:cli:fixtures": "./cli.js test/playbooks/*.playbook.yml -d test -i test/cli.inputs.yml --no-spinner",
