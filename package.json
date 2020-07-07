@@ -32,6 +32,7 @@
     "chai": "^4.2.0",
     "chai-as-promised": "^7.1.1",
     "chai-bn": "^0.2.1",
+    "eslint": "^5.16.0",
     "eslint-plugin-es-beautifier": "^1.0.1",
     "mocha": "^8.0.1",
     "release-it": "^12.4.3",
@@ -40,11 +41,13 @@
   },
   "scripts": {
     "release": "./node_modules/.bin/release-it",
-    "test": "npm run test:lib && npm run test:cli",
+    "test": "npm run test:lib && npm run test:cli && test:codequality",
     "test:lib": "run-with-testrpc -d -m \"myth like bonus scare over problem client lizard pioneer submit female collect\" 'npm run test:build && mocha test/lib.spec.js'",
     "test:cli": "run-with-testrpc -d -m \"myth like bonus scare over problem client lizard pioneer submit female collect\" 'npm run test:build && npm run test:cli:fixtures && mocha test/cli.spec.js'",
     "test:cli:fixtures": "./cli.js test/playbooks/*.playbook.yml -d test -i test/cli.inputs.yml --no-spinner",
-    "test:build": "cd test && truffle build"
+    "test:build": "cd test && truffle build",
+    "test:codequality": "eslint .",
+    "fix:codequality": "eslint . --fix"
   },
   "repository": {
     "type": "git",
