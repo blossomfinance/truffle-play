@@ -105,6 +105,16 @@ yargs
           type: 'string',
           default: 'mapping.js',
         },
+        spinner: {
+          description: 'Show progress information in the form of a spinner',
+          type: 'boolean',
+          default: true,
+        },
+        logger: {
+          description: 'If spinner is disabled, log output to conventional std and stderr streams',
+          type: 'boolean',
+          default: false,
+        },
       });
     },
     handler: async (argv) => {
