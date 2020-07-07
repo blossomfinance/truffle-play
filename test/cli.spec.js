@@ -2,7 +2,6 @@
 
 /* global before, describe, it */
 const BN = require('bn.js');
-const Promise = require('bluebird');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const chaiBN = require('chai-bn');
@@ -14,15 +13,16 @@ chai.use(chaiBN(BN));
 chai.use(chaiAsPromised);
 
 const Runner = require('./../');
-const contracts = require('./expected/contracts');
+const contracts = require('./expected/cli.contracts');
 
-describe('cli', function () {
+describe('Runner (as cli)', function () {
   let inputs;
   let runner;
   let metacoin;
   before(async function () {
-    inputs = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'inputs.yml'), 'utf8'));
+    inputs = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'cli.inputs.yml'), 'utf8'));
     runner = new Runner({
+      spinner: false,
       workingDirectory: __dirname,
     });
     metacoin = await runner.contractAt('MetaCoin', contracts.MetaCoin.address);
@@ -33,12 +33,8 @@ describe('cli', function () {
     chai.expect(values).to.have.property('name', 'Fancy MetaCoin Example');
   });
 
-  it('runs instance methods', async function () {
-    const addresses = Array.from(Array(10).keys()).map(i => `address${i}`);
-    await Promise.each(addresses, async (addressName) => {
-      const address = inputs[addressName];
-      const balance = await metacoin.getBalance(address);
-      chai.expect(balance).to.be.a.bignumber.that.equals(new BN(1000));
-    });
+  it('runs instance methods from single script', async function () {
+    const balance = await metacoin.getBalance(inputs.receiver);
+    chai.expect(balance).to.be.a.bignumber.that.equals(new BN(inputs.amount), `Receiver ${inputs.receiver}`);
   });
 });

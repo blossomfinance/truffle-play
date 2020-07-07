@@ -10,24 +10,19 @@ const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
 
-// const assertValidOptions = require('./../lib/assert-valid-options');
-// const schema = require('./../schemas/command');
-
 chai.use(chaiBN(BN));
 chai.use(chaiAsPromised);
 
 const Runner = require('./../');
 
-const contracts = require('./expected/contracts');
-// const transfers = require('./expected/transfers');
-
-const inputs = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'inputs.yml'), 'utf8'));
-
+const contracts = require('./expected/lib.contracts');
+const inputs = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'lib.inputs.yml'), 'utf8'));
 const runner = new Runner({
+  spinner: false,
   workingDirectory: __dirname,
 });
 
-describe('Runner', function () {
+describe('Runner (as lib)', function () {
   this.timeout(10000);
 
   it('runs deploy scripts with linking', async function () {
