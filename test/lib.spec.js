@@ -27,11 +27,14 @@ describe('Runner (as lib)', function () {
 
   it('runs deploy scripts with linking', async function () {
     const results = await runner.read(path.join(__dirname, 'playbooks/0-deploy.playbook.yml'), inputs);
-    chai.expect(results[0][0]).to.deep.include(contracts.Migrations);
+    chai.expect(results[0][0]).to.have.property('address', contracts.Migrations.address);
+    chai.expect(results[0][0].transaction).to.deep.include(contracts.Migrations.transaction);
     chai.expect(results[0][1]).to.be.undefined;
-    chai.expect(results[0][2]).to.deep.include(contracts.ConvertLib);
+    chai.expect(results[0][2]).to.have.property('address', contracts.ConvertLib.address);
+    chai.expect(results[0][2].transaction).to.deep.include(contracts.ConvertLib.transaction);
     chai.expect(results[0][3]).to.be.undefined;
-    chai.expect(results[0][4]).to.deep.include(contracts.MetaCoin);
+    chai.expect(results[0][4]).to.have.property('address', contracts.MetaCoin.address);
+    chai.expect(results[0][4].transaction).to.deep.include(contracts.MetaCoin.transaction);
   });
 
   it('runs instance methods', async function () {
