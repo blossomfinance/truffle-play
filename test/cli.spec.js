@@ -7,12 +7,12 @@ const chaiAsPromised = require('chai-as-promised');
 const chaiBN = require('chai-bn');
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');
 
 chai.use(chaiBN(BN));
 chai.use(chaiAsPromised);
 
 const Runner = require('./../');
+const { ScriptReader } = Runner;
 const contracts = require('./expected/cli.contracts');
 
 describe('Runner (as cli)', function () {
@@ -20,7 +20,7 @@ describe('Runner (as cli)', function () {
   let runner;
   let metacoin;
   before(async function () {
-    inputs = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'cli.inputs.yml'), 'utf8'));
+    inputs = ScriptReader.parseYaml(fs.readFileSync(path.join(__dirname, 'cli.inputs.yml'), 'utf8'));
     runner = new Runner({
       spinner: false,
       workingDirectory: __dirname,
@@ -31,6 +31,7 @@ describe('Runner (as cli)', function () {
   it('runs deploy scripts with linking', async function () {
     const values = await runner.mapper.map('MetaCoin', contracts.MetaCoin.address);
     chai.expect(values).to.have.property('name', 'Fancy MetaCoin Example');
+    chai.expect(values).to.have.deep.property('when', new Date(2020, 0, 1, 0, 0, 0));
   });
 
   it('runs instance methods from single script', async function () {

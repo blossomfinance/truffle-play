@@ -8,15 +8,15 @@ const chaiAsPromised = require('chai-as-promised');
 const chaiBN = require('chai-bn');
 const fs = require('fs');
 const path = require('path');
-const yaml = require('js-yaml');
 
 chai.use(chaiBN(BN));
 chai.use(chaiAsPromised);
 
 const Runner = require('./../');
+const { ScriptReader } = Runner;
 
 const contracts = require('./expected/lib.contracts');
-const inputs = yaml.safeLoad(fs.readFileSync(path.join(__dirname, 'lib.inputs.yml'), 'utf8'));
+const inputs = ScriptReader.parseYaml(fs.readFileSync(path.join(__dirname, 'lib.inputs.yml'), 'utf8'));
 const runner = new Runner({
   spinner: false,
   workingDirectory: __dirname,

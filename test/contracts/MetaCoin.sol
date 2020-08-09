@@ -13,11 +13,13 @@ contract MetaCoin {
 	event Transfer(address indexed _from, address indexed _to, uint256 _value);
 
 	bytes32 public name;
+	uint public when;
 	uint8 public version;
 
-	constructor(bytes32 _name, uint _balance, uint8 _version) public {
+	constructor(bytes32 _name, uint _balance, uint _when, uint8 _version) public {
 		name = _name;
 		balances[tx.origin] = _balance;
+		when = _when;
 		version = _version;
 	}
 
