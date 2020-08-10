@@ -77,15 +77,14 @@ yargs
           default: false,
           implies: ['dumpPath'],
         },
+        dumpFilename: {
+          description: 'Where to dump the state upon finish',
+          type: 'string',
+        },
         dumpPath: {
           description: 'A list of paths that should be dumped.',
           type: 'array',
           default: ['$deployed'],
-          hidden: true,
-        },
-        dumpFilename: {
-          description: 'Where to dump the state upon finish',
-          type: 'string',
           hidden: true,
         },
         contracts: {
@@ -140,10 +139,15 @@ yargs
         const $deployed = $inputs.$deployed || {};
 
         // add inputs to the initial state
+        if (Array.isArray(argv.state)) {
+          throw new Error('State should not be an array; usage: --state.property.subproperty');
+        }
         const state = merge({
           $deployed,
           $inputs,
-        }, argv.state || {});
+        }, {
+          $inputs: argv.state || {},
+        });
 
         // run list of script files found at specified path(s)
         await runner.read(argv.path, state);
