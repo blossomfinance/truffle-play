@@ -1,6 +1,5 @@
 ---
 
-name: Fancy MetaCoin Example
 balance: 10000
 when: !!js/function 'function () { return Math.floor((new Date(2020, 0, 1, 0, 0, 0)).getTime() / 1000); }'
 version: 4

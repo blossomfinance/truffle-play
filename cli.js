@@ -5,6 +5,7 @@
 const merge = require('deepmerge');
 const path = require('path');
 const yargs = require('yargs');
+const util = require('util');
 
 const Runner = require('./');
 const ScriptReader = require('./lib/script-reader');
@@ -50,13 +51,19 @@ yargs
           default: true,
           type: 'boolean',
         },
-        input: {
-          description: 'Path to a file that contains inputs.',
-          alias: ['inputs', 'i'],
+        inputs: {
+          description: 'Path(s) to a file containing inputs and/or individual properties to set on the state.$inputs. Files will be loaded and parsed.',
+          alias: ['input', 'i'],
+          type: 'string',
+        },
+        deployed: {
+          description: 'Path(s) to a file containing addresses of deployed contracts and/or individual properties to set on the state.$deployed. Files will be loaded and parsed.',
+          alias: ['e'],
           type: 'string',
         },
         debug: {
-          description: 'Write inputs and outputs to console',
+          description: 'Log initial state, inputs, and outputs to console',
+          alias: ['verbose', 'v'],
           type: 'boolean',
         },
         debugInspectDepth: {
@@ -123,31 +130,47 @@ yargs
 
         runner = new Runner(argv);
 
+        const objectifyArgvProperty = (property) => {
+          let result = {};
+          if ('string' === typeof property) {
+            return runner.scriptReader.merge(property);
+          }
+          if (Array.isArray(property)) {
+            property.forEach((input, i) => {
+              if ('string' === typeof input) {
+                const newInputs = runner.scriptReader.merge(input);
+                result = merge(result, newInputs);
+                return;
+              }
+              if ('object' === typeof input) {
+                result = merge(result, input);
+                return;
+              }
+              throw new Error(`Input ${i} had unexpected type (${typeof input}); usage --inputs.foo=bar and/or --inputs path-to-file`);
+            });
+            return result;
+          }
+          if ('object' === typeof property) {
+            return property;
+          }
+          return result;
+        };
+
         // ensure relative paths of input files coerced into absolute
         // using the workingDirectory
-        if (argv.inputs) {
-          const inputsPath = argv.inputs;
-          argv.inputs = runner.scriptReader.merge(inputsPath);
-          if (!Object.keys(argv.inputs).length) {
-            runner.spinner.warn(`No inputs found from ${inputsPath}`);
-          }
-        }
+        const $inputs = objectifyArgvProperty(argv.inputs);
+        const $deployed = merge($inputs.$deployed, objectifyArgvProperty(argv.deployed));
 
-        const $inputs = argv.inputs || {};
-        // deployed is a special case
-        // as this could be output from a state dump
-        const $deployed = $inputs.$deployed || {};
-
-        // add inputs to the initial state
-        if (Array.isArray(argv.state)) {
-          throw new Error('State should not be an array; usage: --state.property.subproperty');
-        }
-        const state = merge({
+        const state = {
           $deployed,
           $inputs,
-        }, {
-          $inputs: argv.state || {},
-        });
+        };
+        if (argv.debug) {
+          const deserializedState = util.inspect(state, {
+            depth: argv.debugInspectDepth,
+          });
+          runner.spinner.info(`Initial state is: \n${deserializedState}`);
+        }
 
         // run list of script files found at specified path(s)
         await runner.read(argv.path, state);
