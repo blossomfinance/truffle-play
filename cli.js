@@ -130,24 +130,37 @@ yargs
 
         runner = new Runner(argv);
 
-        const objectifyArgvProperty = (property) => {
+        const objectifyArgvProperty = (parent, propName) => {
+          const property = parent && parent[propName] ? parent[propName] : parent;
           let result = {};
           if ('string' === typeof property) {
-            return runner.scriptReader.merge(property);
+            let result = runner.scriptReader.merge(property);
+            if (result[propName]) {
+              result = merge(result, result[propName]);
+              delete result[propName];
+            }
+            return result;
           }
           if (Array.isArray(property)) {
             property.forEach((input, i) => {
               if ('string' === typeof input) {
-                const newInputs = runner.scriptReader.merge(input);
+                let newInputs = runner.scriptReader.merge(input);
+                if (newInputs[propName]) {
+                  newInputs = merge(newInputs, newInputs[propName]);
+                }
                 result = merge(result, newInputs);
                 return;
               }
               if ('object' === typeof input) {
+                if (input[propName]) {
+                  result = merge(result, input[propName]);
+                }
                 result = merge(result, input);
                 return;
               }
               throw new Error(`Input ${i} had unexpected type (${typeof input}); usage --inputs.foo=bar and/or --inputs path-to-file`);
             });
+            delete result[propName];
             return result;
           }
           if ('object' === typeof property) {
@@ -158,8 +171,8 @@ yargs
 
         // ensure relative paths of input files coerced into absolute
         // using the workingDirectory
-        const $inputs = objectifyArgvProperty(argv.inputs);
-        const $deployed = merge($inputs.$deployed, objectifyArgvProperty(argv.deployed));
+        const $inputs = objectifyArgvProperty(argv.inputs, '$inputs');
+        const $deployed = merge($inputs.$deployed, objectifyArgvProperty(argv.deployed, '$deployed'));
 
         const state = {
           $deployed,
