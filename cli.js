@@ -9,6 +9,7 @@ const util = require('util');
 
 const Runner = require('./');
 const ScriptReader = require('./lib/script-reader');
+const formatStateArgs = require('./lib/format-state-args');
 
 const defaultWorkingDirectory = path.join(__dirname, '/../../');
 
@@ -130,49 +131,12 @@ yargs
 
         runner = new Runner(argv);
 
-        const objectifyArgvProperty = (parent, propName) => {
-          const property = parent && parent[propName] ? parent[propName] : parent;
-          let result = {};
-          if ('string' === typeof property) {
-            let result = runner.scriptReader.merge(property);
-            if (result[propName]) {
-              result = merge(result, result[propName]);
-              delete result[propName];
-            }
-            return result;
-          }
-          if (Array.isArray(property)) {
-            property.forEach((input, i) => {
-              if ('string' === typeof input) {
-                let newInputs = runner.scriptReader.merge(input);
-                if (newInputs[propName]) {
-                  newInputs = merge(newInputs, newInputs[propName]);
-                }
-                result = merge(result, newInputs);
-                return;
-              }
-              if ('object' === typeof input) {
-                if (input[propName]) {
-                  result = merge(result, input[propName]);
-                }
-                result = merge(result, input);
-                return;
-              }
-              throw new Error(`Input ${i} had unexpected type (${typeof input}); usage --inputs.foo=bar and/or --inputs path-to-file`);
-            });
-            delete result[propName];
-            return result;
-          }
-          if ('object' === typeof property) {
-            return property;
-          }
-          return result;
-        };
-
+        const objectifyArgvProperty = formatStateArgs(runner.scriptReader);
         // ensure relative paths of input files coerced into absolute
         // using the workingDirectory
         const $inputs = objectifyArgvProperty(argv.inputs, '$inputs');
         const $deployed = merge($inputs.$deployed, objectifyArgvProperty(argv.deployed, '$deployed'));
+        delete $inputs.$deployed;
 
         const state = {
           $deployed,
