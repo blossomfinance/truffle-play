@@ -118,12 +118,16 @@ describe('Runner (as lib)', function () {
       await chai.expect(runner.read([{
         contract: 'MetaCoin',
         run: 'getBalance',
-        at: '$deployed.MetaCoin.address',
+        at: '$deployed.MetaCoin',
         inputs: [{
           holder: '$inputs.address',
         }],
       }], {
-        $deployed: contracts,
+        $deployed: {
+          Migrations: contracts.Migrations.address,
+          ConvertLib: contracts.ConvertLib.address,
+          MetaCoin: contracts.MetaCoin.address,
+        },
         address: inputs.addresses[2],
       })).to.be.fulfilled;
     });
@@ -132,12 +136,16 @@ describe('Runner (as lib)', function () {
       await chai.expect(runner.read({
         contract: 'MetaCoin',
         run: 'getBalance',
-        at: '$deployed.MetaCoin.address',
+        at: '$deployed.MetaCoin',
         inputs: [{
           holder: '$inputs.address',
         }],
       }, {
-        $deployed: contracts,
+        $deployed: {
+          Migrations: contracts.Migrations.address,
+          ConvertLib: contracts.ConvertLib.address,
+          MetaCoin: contracts.MetaCoin.address,
+        },
         $inputs: {
           address: inputs.addresses[2],
         },
@@ -148,7 +156,7 @@ describe('Runner (as lib)', function () {
       await chai.expect(runner.read([{
         contract: 'MetaCoin',
         run: 'getBalance',
-        at: '$deployed.MetaCoin.address',
+        at: '$deployed.MetaCoin',
         inputs: [{
           holder: '$inputs.address',
         }],
